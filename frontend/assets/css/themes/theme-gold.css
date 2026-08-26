@@ -1,0 +1,23 @@
+/* AETHERIS - Theme: Royal Gold */
+:root {
+    --primary:        #b8860b;
+    --primary-hover:  #d4af37;
+    --primary-dark:   #8b6914;
+    --secondary:      #d4af37;
+    --accent:         #ffd700;
+    --success:        #2e8b57;
+    --danger:         #c0392b;
+    --bg-dark:        #0d0a00;
+    --bg-card:        rgba(25,18,0,0.78);
+    --bg-card-hover:  rgba(38,28,0,0.88);
+    --border-color:   rgba(212,175,55,0.18);
+    --text-main:      #fef9e7;
+    --text-muted:     #c9b37e;
+    --font-sans:      'Cormorant Garamond', serif;
+    --font-heading:   'Cinzel', serif;
+    --radius-card:    14px;
+    --radius-btn:     10px;
+    --glass-blur:     10px;
+    --shadow-btn:     0 4px 15px rgba(212,175,55,0.30);
+}
+body { background-color: var(--bg-dark); }

@@ -1,0 +1,25 @@
+/* AETHERIS - Theme: Obsidian Purple (Default) */
+:root {
+    --primary:        #8b5cf6;
+    --primary-hover:  #a78bfa;
+    --primary-dark:   #7c3aed;
+    --secondary:      #06b6d4;
+    --accent:         #f59e0b;
+    --success:        #10b981;
+    --danger:         #ef4444;
+    --bg-dark:        #0a0b0e;
+    --bg-card:        rgba(21,24,33,0.70);
+    --bg-card-hover:  rgba(30,35,48,0.85);
+    --border-color:   rgba(255,255,255,0.08);
+    --text-main:      #f3f4f6;
+    --text-muted:     #9ca3af;
+    --font-sans:      'Outfit', sans-serif;
+    --font-heading:   'Cinzel', serif;
+    --radius-card:    16px;
+    --radius-btn:     12px;
+    --glass-blur:     12px;
+    --glass-opacity:  0.70;
+    --shadow-btn:     0 4px 15px rgba(139,92,246,0.40);
+    --shadow-hover:   0 12px 40px rgba(139,92,246,0.20);
+}
+body { background-color: var(--bg-dark); }

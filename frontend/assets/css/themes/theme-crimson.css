@@ -1,0 +1,24 @@
+/* AETHERIS - Theme: Crimson Casino */
+:root {
+    --primary:        #dc143c;
+    --primary-hover:  #ff4060;
+    --primary-dark:   #a50e2c;
+    --secondary:      #ff6b6b;
+    --accent:         #ffd700;
+    --success:        #10b981;
+    --danger:         #ff2244;
+    --bg-dark:        #0d0004;
+    --bg-card:        rgba(30,0,8,0.82);
+    --bg-card-hover:  rgba(48,0,14,0.90);
+    --border-color:   rgba(220,20,60,0.18);
+    --text-main:      #fff0f3;
+    --text-muted:     #ffb3b3;
+    --font-sans:      'Playfair Display', serif;
+    --font-heading:   'Cinzel', serif;
+    --radius-card:    12px;
+    --radius-btn:     10px;
+    --glass-blur:     12px;
+    --shadow-btn:     0 4px 15px rgba(220,20,60,0.35);
+    --shadow-hover:   0 12px 40px rgba(220,20,60,0.20);
+}
+body { background-color: var(--bg-dark); }

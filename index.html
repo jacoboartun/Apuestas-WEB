@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aetheris Casino & Sportsbook | Premium Online Gaming</title>
+    <meta name="description" content="Aetheris is a next-generation decentralized gaming and sportsbook simulator featuring premium aesthetics, secure balances, and adjustable win distributions.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- Security Lockout Screen -->
+    <div id="security-lock-screen">
+        <div class="lock-icon">🛡️</div>
+        <h1>ALERTA DE SEGURIDAD</h1>
+        <p style="margin: 16px 0; max-width: 500px; font-size: 1.1rem; color: var(--text-muted);">
+            Se ha detectado una alteración no autorizada en el balance o saldo local de su cuenta. 
+            El motor de integridad HMAC ha bloqueado esta sesión de juego para proteger el ecosistema de la plataforma.
+        </p>
+        <button class="btn btn-primary" onclick="resetStateAfterBreach()">Restablecer Cuenta de Fábrica</button>
+    </div>
+
+    <!-- Confetti Canvas -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Main Container -->
+    <div id="app-container">
+        
+        <!-- Header -->
+        <header class="glass">
+            <div class="logo-container" onclick="window.location.hash = ''">
+                <span class="logo-icon">✨</span>
+                <span class="logo-text text-gradient">AETHERIS</span>
+            </div>
+            
+            <nav class="header-center">
+                <a href="#" class="nav-link active" onclick="setCategoryFilter('all')">Todos los Juegos</a>
+                <a href="#sports" class="nav-link" onclick="setCategoryFilter('sports')">Deportes</a>
+                <a href="#livedealer" class="nav-link" onclick="setCategoryFilter('live')">Casino en Vivo</a>
+            </nav>
+
+            <div class="header-right">
+                <!-- Theme Switcher -->
+                <div class="theme-switcher" style="margin-right: 12px;">
+                    <select id="theme-select" onchange="changeTheme(this.value)" style="background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 12px; font-family: var(--font-sans); cursor: pointer; outline: none; font-weight: 500;">
+                        <option value="dark">🌙 Neón (Oscuro)</option>
+                        <option value="gold">🏆 Casino Gold</option>
+                        <option value="cyberpunk">🦾 Cyberpunk</option>
+                        <option value="light">☀️ Modo Claro</option>
+                    </select>
+                </div>
+
+                <!-- Logged In HUD -->
+                <div id="logged-in-hud" style="display: none; align-items: center; gap: 16px;">
+                    <button class="btn btn-secondary" onclick="openWalletModal()">
+                        <span>Wallet:</span>
+                        <span class="wallet-balance" id="hud-balance">$0.00</span>
+                    </button>
+                    <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                        <span id="hud-email" style="font-weight: 600; font-size: 0.85rem; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">user@aetheris.com</span>
+                        <span id="hud-vip" class="user-badge badge-user">VIP Level 1</span>
+                    </div>
+                    <button id="admin-panel-btn" class="btn btn-accent btn-sm" style="display: none;" onclick="window.location.hash = '#admin'">Admin Panel</button>
+                    <button class="btn btn-secondary" style="padding: 8px 12px;" onclick="handleLogout()">Cerrar Sesión</button>
+                </div>
+
+                <!-- Logged Out Buttons -->
+                <div id="logged-out-hud" style="display: flex; gap: 12px;">
+                    <button class="btn btn-secondary" onclick="openAuthModal('login')">Ingresar</button>
+                    <button class="btn btn-primary" onclick="openAuthModal('register')">Registrarse</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <div class="main-wrapper">
+            
+            <!-- Main Content Area -->
+            <main id="main-viewport">
+                <!-- Landing Dashboard View -->
+                <div id="dashboard-view">
+                    <div class="hero-banner glass">
+                        <h1 class="text-gradient">El Futuro del Azar, Hoy</h1>
+                        <p style="color: var(--text-muted); margin-bottom: 24px; max-width: 600px;">
+                            Explora 20 juegos interactivos con animaciones dinámicas, física integrada y la seguridad criptográfica del ecosistema Aetheris.
+                        </p>
+                        <div style="display: flex; gap: 16px;">
+                            <button class="btn btn-primary" onclick="scrollToGames()">Jugar Ahora</button>
+                            <button class="btn btn-secondary" onclick="openWalletModal()">Depositar Fondos Simulado</button>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                        <h2 style="font-family: var(--font-serif); font-size: 1.8rem;">Salón de Juegos</h2>
+                        <div class="game-categories" id="dashboard-categories">
+                            <span class="category-tab active" onclick="filterGames('all', this)">Todos</span>
+                            <span class="category-tab" onclick="filterGames('popular', this)">Populares</span>
+                            <span class="category-tab" onclick="filterGames('cards', this)">Cartas</span>
+                            <span class="category-tab" onclick="filterGames('dice', this)">Dados</span>
+                            <span class="category-tab" onclick="filterGames('instant', this)">Instantáneos</span>
+                            <span class="category-tab" onclick="filterGames('lottery', this)">Loterías</span>
+                        </div>
+                    </div>
+
+                    <!-- Games Grid -->
+                    <div class="games-grid" id="games-grid-container">
+                        <!-- Loaded dynamically via router.js -->
+                    </div>
+                </div>
+
+                <!-- Game Execution View (Hidden initially) -->
+                <div id="game-view" style="display: none;">
+                    <div style="margin-bottom: 24px; display: flex; align-items: center; gap: 20px;">
+                        <button class="btn btn-secondary" onclick="window.location.hash = ''">← Volver</button>
+                        <h2 id="active-game-title" style="font-family: var(--font-serif); font-size: 2.5rem; text-shadow: var(--text-glow);" class="text-gradient">Nombre del Juego</h2>
+                        <span id="active-game-rtp-badge" class="rtp-indicator" style="font-size: 1.1rem; background: rgba(0,0,0,0.5); padding: 6px 16px; border-radius: 12px; border: 1px solid var(--border-color);">RTP: 96%</span>
+                    </div>
+
+                    <!-- Immersive Unified Game Console -->
+                    <div class="game-viewport-container" style="gap: 32px;">
+                        <!-- Left Panel: Bet controls -->
+                        <div class="game-bet-panel glass" style="background: rgba(0, 0, 0, 0.4); border-right: 2px solid var(--primary);">
+                            <div class="form-group">
+                                <label class="form-label" style="font-size: 1.1rem; color: #fff;">Monto de Apuesta ($)</label>
+                                <input type="number" id="game-bet-input" class="form-input" min="1" max="5000" value="10" style="font-size: 1.5rem; text-align: center; font-weight: bold; background: rgba(0,0,0,0.6);">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
+                                    <button class="btn btn-secondary" onclick="halveBet()">1/2</button>
+                                    <button class="btn btn-secondary" onclick="doubleBet()">2x</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Dynamic Game Config Options will render here -->
+                            <div id="game-custom-configs" style="display: flex; flex-direction: column; gap: 16px;"></div>
+
+                            <button id="game-play-btn" class="btn btn-primary" style="margin-top: auto; font-size: 1.3rem; font-weight: 800; height: 60px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 20px var(--primary);">Apostar</button>
+                        </div>
+
+                        <!-- Right Panel: Visual rendering stage -->
+                        <div class="game-stage-wrapper glass" id="game-canvas-stage" style="box-shadow: inset 0 0 60px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.05);">
+                            <!-- Visual game board canvas or HTML structures go here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin panel View (Hidden initially) -->
+                <div id="admin-view" style="display: none;">
+                    <h2 style="font-family: var(--font-serif); font-size: 2.2rem;" class="text-gradient">Panel del Administrador</h2>
+                    <p style="color: var(--text-muted);">Administra la configuración del juego, ganancias y estadísticas de la plataforma.</p>
+
+                    <!-- Platform Analytics -->
+                    <div class="profile-stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-top: 24px;">
+                        <div class="stat-item glass">
+                            <span class="form-label">Volumen Total Apostado</span>
+                            <div class="stat-val" id="admin-total-volume">$0.00</div>
+                        </div>
+                        <div class="stat-item glass">
+                            <span class="form-label">Retornos Pagados</span>
+                            <div class="stat-val text-gradient" id="admin-total-payouts">$0.00</div>
+                        </div>
+                        <div class="stat-item glass">
+                            <span class="form-label">Margen de la Casa (Neto)</span>
+                            <div class="stat-val" id="admin-house-profit" style="color: var(--success); font-weight: 800;">$0.00</div>
+                        </div>
+                        <div class="stat-item glass">
+                            <span class="form-label">Total de Apuestas Realizadas</span>
+                            <div class="stat-val" id="admin-total-bets">0</div>
+                        </div>
+                    </div>
+
+                    <!-- RTP Tuning sliders -->
+                    <h3 style="margin-top: 32px; font-size: 1.4rem;">Configuración de RTP (Return to Player)</h3>
+                    <div class="admin-grid">
+                        <div class="admin-card glass">
+                            <span class="form-label">RTP Global del Sitio: <span id="val-global-rtp" style="color: var(--primary-hover); font-weight: 700;">95%</span></span>
+                            <div class="admin-slider-container">
+                                <input type="range" class="admin-slider" id="slider-global-rtp" min="0.50" max="1.50" step="0.01" value="0.95" oninput="updateRtpDisplay(this, 'global')">
+                            </div>
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Carga porcentajes para alterar dinámicamente las probabilidades de ganar del usuario en todos los juegos.</p>
+                        </div>
+
+                        <div class="admin-card glass">
+                            <span class="form-label">RTP Tragamonedas (Slots): <span id="val-slots-rtp" style="color: var(--secondary); font-weight: 700;">96%</span></span>
+                            <div class="admin-slider-container">
+                                <input type="range" class="admin-slider" id="slider-slots-rtp" min="0.50" max="1.50" step="0.01" value="0.96" oninput="updateRtpDisplay(this, 'slots')">
+                            </div>
+                        </div>
+
+                        <div class="admin-card glass">
+                            <span class="form-label">RTP Crash Rocket: <span id="val-crash-rtp" style="color: var(--secondary); font-weight: 700;">97%</span></span>
+                            <div class="admin-slider-container">
+                                <input type="range" class="admin-slider" id="slider-crash-rtp" min="0.50" max="1.50" step="0.01" value="0.97" oninput="updateRtpDisplay(this, 'crash')">
+                            </div>
+                        </div>
+
+                        <div class="admin-card glass">
+                            <span class="form-label">RTP Plinko: <span id="val-plinko-rtp" style="color: var(--secondary); font-weight: 700;">98%</span></span>
+                            <div class="admin-slider-container">
+                                <input type="range" class="admin-slider" id="slider-plinko-rtp" min="0.50" max="1.50" step="0.01" value="0.98" oninput="updateRtpDisplay(this, 'plinko')">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Game Visibility controls -->
+                    <h3 style="margin-top: 32px; font-size: 1.4rem;">Visibilidad de Juegos</h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px;">Oculta o muestra juegos en el salón principal.</p>
+                    <div class="admin-grid" id="admin-game-visibility-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
+                        <!-- Loaded dynamically -->
+                    </div>
+
+                    <!-- Reset and User Administration -->
+                    <div class="admin-grid" style="grid-template-columns: 1fr 1.5fr; margin-top: 32px;">
+                        <div class="admin-card glass" style="display: flex; flex-direction: column; gap: 16px;">
+                            <h3 style="font-size: 1.2rem;">Acciones Críticas</h3>
+                            <button class="btn btn-danger" onclick="confirmResetPlatform()">Reiniciar Estadísticas y Saldos</button>
+                            <div style="border-top: 1px solid var(--border-color); padding-top: 16px;">
+                                <label class="form-label">Ajustar Saldo de Usuario</label>
+                                <input type="text" id="admin-user-email" class="form-input" placeholder="correo@usuario.com" style="margin-bottom: 8px;">
+                                <input type="number" id="admin-user-amount" class="form-input" placeholder="Nuevo Saldo ($)" style="margin-bottom: 12px;">
+                                <button class="btn btn-primary" style="width: 100%;" onclick="adminAdjustUserBalance()">Aplicar Saldo</button>
+                            </div>
+                        </div>
+
+                        <div class="admin-card glass">
+                            <h3 style="font-size: 1.2rem; margin-bottom: 16px;">Auditoría de Actividad en Tiempo Real</h3>
+                            <div class="logs-box" id="admin-audit-logs">
+                                <!-- Loaded dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mercado Pago Configuration -->
+                    <div class="admin-grid" style="grid-template-columns: 1fr; margin-top: 32px;">
+                        <div class="admin-card glass" style="display: flex; flex-direction: column; gap: 16px;">
+                            <h3 style="font-size: 1.2rem;">Configuración Mercado Pago</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                <div>
+                                    <label class="form-label">Public Key</label>
+                                    <input type="text" id="admin-mp-public-key" class="form-input" placeholder="TEST-xxxx...">
+                                </div>
+                                <div>
+                                    <label class="form-label">Access Token</label>
+                                    <input type="password" id="admin-mp-access-token" class="form-input" placeholder="TEST-xxxx...">
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" onclick="adminSaveMercadoPagoConfig()">Guardar Credenciales</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Sidebar Live Chat -->
+            <aside id="chat-sidebar" class="glass">
+                <div class="chat-header">
+                    <span style="font-weight: 700; font-size: 0.95rem;">Chat de Jugadores (En Vivo)</span>
+                    <span style="color: var(--success); font-size: 0.8rem; display: flex; align-items: center; gap: 6px;">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--success);"></span>
+                        342 Activos
+                    </span>
+                </div>
+                <div class="chat-messages" id="chat-messages-container">
+                    <!-- Dynamic chat simulation -->
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" id="chat-text-input" class="chat-input" placeholder="Escribe un mensaje...">
+                    <button class="btn btn-primary" style="padding: 8px 16px;" onclick="sendChatMessage()">Enviar</button>
+                </div>
+            </aside>
+
+        </div>
+
+    </div>
+
+    <!-- MODAL: Authentication -->
+    <div class="modal-overlay" id="auth-modal">
+        <div class="modal-content glass">
+            <button class="modal-close" onclick="closeAuthModal()">✕</button>
+            <h2 id="auth-modal-title" style="font-family: var(--font-serif); margin-bottom: 24px;" class="text-gradient">Iniciar Sesión</h2>
+            
+            <div id="auth-main-step">
+                <form id="auth-form" onsubmit="handleAuthSubmit(event)">
+                    <div class="form-group">
+                        <label class="form-label">Correo Electrónico</label>
+                        <input type="email" id="auth-email" class="form-input" required placeholder="correo@ejemplo.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contraseña</label>
+                        <input type="password" id="auth-password" class="form-input" required placeholder="••••••••">
+                    </div>
+                    <div id="forgot-pw-container" style="text-align: right; margin-top: -10px; margin-bottom: 12px;">
+                        <a href="#" style="color: var(--text-muted); font-size: 0.8rem; text-decoration: none;" onclick="startForgotPassword()">¿Olvidaste tu contraseña?</a>
+                    </div>
+                    
+                    <!-- Registration Specific fields -->
+                    <div id="register-only-fields" style="display: none;" class="form-group">
+                        <label class="form-label">Tipo de Cuenta</label>
+                        <select id="auth-role" class="form-input">
+                            <option value="user">Usuario Standard ($5,000 inicial)</option>
+                            <option value="admin">Administrador (Control de Premios)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" id="auth-submit-btn" class="btn btn-primary" style="width: 100%; margin-top: 12px;">Ingresar</button>
+                </form>
+                <p id="auth-toggle-msg" style="margin-top: 16px; font-size: 0.85rem; color: var(--text-muted); text-align: center;">
+                    ¿No tienes cuenta? <a href="#" style="color: var(--primary-hover);" onclick="toggleAuthMode('register')">Regístrate aquí</a>
+                </p>
+            </div>
+
+            <!-- Verification Step -->
+            <div id="auth-verify-step" style="display: none;">
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px; text-align: center;">
+                    Hemos enviado un código de 4 dígitos a <br><strong id="verify-email-display" style="color: var(--text-main);">tu correo</strong>.
+                </p>
+                <div class="form-group" style="display: flex; justify-content: center;">
+                    <input type="text" id="verify-code-input" class="form-input" style="font-size: 2rem; text-align: center; letter-spacing: 12px; font-weight: bold; padding: 12px 0;" maxlength="4" placeholder="••••">
+                </div>
+                <div id="reset-pw-fields" style="display: none;" class="form-group">
+                    <label class="form-label">Nueva Contraseña</label>
+                    <input type="password" id="verify-new-password" class="form-input" placeholder="••••••••">
+                </div>
+                <button class="btn btn-primary" style="width: 100%; margin-top: 8px;" onclick="submitVerificationCode()">Verificar Código</button>
+                <button class="btn btn-secondary" style="width: 100%; margin-top: 8px;" onclick="cancelVerification()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Wallet Deposit/Withdrawal -->
+    <div class="modal-overlay" id="wallet-modal">
+        <div class="modal-content glass">
+            <button class="modal-close" onclick="closeWalletModal()">✕</button>
+            <h2 style="font-family: var(--font-serif); margin-bottom: 12px;" class="text-gradient">Caja / Wallet</h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 24px;">Transacciones simuladas para demostración del sistema.</p>
+
+            <div class="profile-stats-grid">
+                <div class="stat-item" style="grid-column: span 2;">
+                    <span class="form-label">Saldo Disponible</span>
+                    <div class="stat-val" id="wallet-balance-val">$0.00</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Monto de la Transacción ($)</label>
+                <input type="number" id="wallet-amount" class="form-input" min="5" max="10000" value="100">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px;">
+                <button class="btn btn-success" onclick="handleWalletTransaction(true)">✓ Depositar Simulado</button>
+                <button class="btn btn-primary" style="background-color: #009ee3; color: white;" onclick="handleMercadoPagoDeposit()">💳 Mercado Pago</button>
+                <button class="btn btn-secondary" onclick="handleWalletTransaction(false)">⤓ Retirar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load State Script first -->
+    <script src="js/state.js"></script>
+    <script src="js/gameEngine.js"></script>
+    
+    <!-- Games scripts loader -->
+    <script src="js/games/slots.js"></script>
+    <script src="js/games/crash.js"></script>
+    <script src="js/games/plinko.js"></script>
+    <script src="js/games/mines.js"></script>
+    <script src="js/games/roulette.js"></script>
+    <script src="js/games/blackjack.js"></script>
+    <script src="js/games/poker.js"></script>
+    <script src="js/games/baccarat.js"></script>
+    <script src="js/games/craps.js"></script>
+    <script src="js/games/videopoker.js"></script>
+    <script src="js/games/sicbo.js"></script>
+    <script src="js/games/scratch.js"></script>
+    <script src="js/games/coinflip.js"></script>
+    <script src="js/games/bingo.js"></script>
+    <script src="js/games/lottery.js"></script>
+    <script src="js/games/keno.js"></script>
+    <script src="js/games/quinielas.js"></script>
+    <script src="js/games/sports.js"></script>
+    <script src="js/games/wheel.js"></script>
+    <script src="js/games/livedealer.js"></script>
+
+    <!-- Main router last -->
+    <script src="js/router.js"></script>
+</body>
+</html>
