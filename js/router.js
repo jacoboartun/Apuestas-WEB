@@ -216,7 +216,10 @@ function toggleAuthMode(mode) {
     }
 }
 
-window.authProcess = { mode: null, email: null, password: null, role: null, code: null };
+// El código de verificación (registro / recuperación) ya no vive en el
+// navegador: lo genera y valida el backend. Aquí solo recordamos en qué
+// paso del flujo estamos.
+window.authProcess = { mode: null, email: null };
 
 async function handleAuthSubmit(e) {
     e.preventDefault();
@@ -226,12 +229,11 @@ async function handleAuthSubmit(e) {
 
     try {
         if (authMode === 'register') {
-            const code = Math.floor(1000 + Math.random() * 9000).toString();
-            window.authProcess = { mode: 'register', email, password, role, code };
-            
+            window.authProcess = { mode: 'register', email };
+
             showToast('Enviando código de verificación al correo...', 'info');
-            await sendVerificationEmail(email, code, 'register');
-            
+            await window.stateManager.requestRegistrationCode(email, password, role);
+
             document.getElementById('auth-main-step').style.display = 'none';
             document.getElementById('auth-verify-step').style.display = 'block';
             document.getElementById('verify-email-display').innerText = email;
@@ -254,39 +256,24 @@ async function startForgotPassword() {
         showToast('Ingresa tu correo electrónico primero.', 'danger');
         return;
     }
-    const user = window.stateManager.state.users.find(u => u.email === email);
-    if (!user) {
-        showToast('El correo no está registrado.', 'danger');
-        return;
-    }
-    
+
     try {
-        const code = Math.floor(1000 + Math.random() * 9000).toString();
-        window.authProcess = { mode: 'reset', email, code };
-        
+        window.authProcess = { mode: 'reset', email };
+
         showToast('Enviando código de recuperación al correo...', 'info');
-        await sendVerificationEmail(email, code, 'reset');
-        
+        await window.stateManager.requestPasswordResetCode(email);
+
         document.getElementById('auth-main-step').style.display = 'none';
         document.getElementById('auth-verify-step').style.display = 'block';
         document.getElementById('verify-email-display').innerText = email;
         document.getElementById('reset-pw-fields').style.display = 'block';
-    } catch(err) {
+    } catch (err) {
         showToast(err.message, 'danger');
     }
 }
 
-async function sendVerificationEmail(email, code, type) {
-    const response = await fetch(DRIVE_APP_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'sendCode', email, code, type })
-    });
-    const result = await response.json();
-    if (!result.success) throw new Error('No se pudo enviar el correo.');
-}
-
 function cancelVerification() {
-    window.authProcess = { mode: null, email: null, password: null, role: null, code: null };
+    window.authProcess = { mode: null, email: null };
     const mainStep = document.getElementById('auth-main-step');
     const verifyStep = document.getElementById('auth-verify-step');
     if (mainStep) mainStep.style.display = 'block';
@@ -297,29 +284,21 @@ function cancelVerification() {
 
 async function submitVerificationCode() {
     const inputCode = document.getElementById('verify-code-input').value;
-    if (inputCode !== window.authProcess.code) {
-        showToast('Código incorrecto.', 'danger');
-        return;
-    }
-    
+
     try {
         if (window.authProcess.mode === 'register') {
-            await window.stateManager.register(window.authProcess.email, window.authProcess.password, window.authProcess.role);
+            await window.stateManager.completeRegistration(window.authProcess.email, inputCode);
             showToast('Cuenta verificada y creada con éxito.', 'success');
-            await window.stateManager.login(window.authProcess.email, window.authProcess.password);
         } else if (window.authProcess.mode === 'reset') {
             const newPassword = document.getElementById('verify-new-password').value;
             if (!newPassword || newPassword.length < 6) {
                 showToast('La nueva contraseña debe tener al menos 6 caracteres.', 'danger');
                 return;
             }
-            const user = window.stateManager.state.users.find(u => u.email === window.authProcess.email);
-            user.passwordHash = await sha256(newPassword);
-            await window.stateManager.save();
+            await window.stateManager.completePasswordReset(window.authProcess.email, inputCode, newPassword);
             showToast('Contraseña restablecida con éxito.', 'success');
-            await window.stateManager.login(window.authProcess.email, newPassword);
         }
-        
+
         cancelVerification();
         closeAuthModal();
         updateUserHud();
@@ -371,68 +350,37 @@ async function handleWalletTransaction(isDeposit) {
 async function handleMercadoPagoDeposit() {
     const amountStr = document.getElementById('wallet-amount').value;
     const amount = parseFloat(amountStr);
-    
+
     if (isNaN(amount) || amount <= 0) {
         showToast('Monto inválido.', 'danger');
         return;
     }
 
-    const config = window.stateManager.state.mercadoPagoConfig;
-    if (!config || !config.accessToken) {
-        showToast('Mercado Pago no está configurado por el administrador.', 'danger');
-        return;
-    }
-
     try {
-        // En un entorno real, esta llamada JAMÁS debe hacerse desde el frontend. 
-        // Se hace aquí solo para propósitos demostrativos según la arquitectura actual.
-        const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${config.accessToken}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                items: [
-                    {
-                        title: 'Depósito Aetheris Casino',
-                        quantity: 1,
-                        currency_id: 'ARS',
-                        unit_price: amount
-                    }
-                ],
-                back_urls: {
-                    success: window.location.href,
-                    failure: window.location.href,
-                    pending: window.location.href
-                },
-                auto_return: 'approved'
-            })
-        });
+        // La preferencia se crea en el servidor (backend/drive_script.js), que es
+        // el único lugar donde vive el Access Token de Mercado Pago. El saldo se
+        // acredita solo cuando Mercado Pago confirma el pago vía webhook, nunca
+        // al simplemente abrir el checkout.
+        const initPoint = await window.stateManager.createMercadoPagoPreference(amount);
 
-        if (!response.ok) {
-            throw new Error('Error al crear preferencia de Mercado Pago');
-        }
-
-        const data = await response.json();
-        
-        // Simulación: Al abrir el checkout, acreditamos el saldo automáticamente.
-        // En un entorno real esto debería hacerse mediante Webhooks en un servidor backend.
-        await window.stateManager.updateWallet(amount, true);
-        showToast('Redirigiendo a Mercado Pago...', 'success');
-        updateUserHud();
+        showToast('Redirigiendo a Mercado Pago. Tu saldo se acreditará al confirmarse el pago.', 'success');
         closeWalletModal();
-        
-        // Redirigir al usuario al init_point
-        window.open(data.init_point, '_blank');
-        
+        window.open(initPoint, '_blank');
+
     } catch (err) {
         showToast(err.message, 'danger');
     }
 }
 
 // Admin Panel HUD Controls
-function updateAdminDashboard() {
+async function updateAdminDashboard() {
+    try {
+        await window.stateManager.fetchAdminDashboard();
+    } catch (err) {
+        showToast(err.message, 'danger');
+        return;
+    }
+
     const stats = window.stateManager.state.platformStats;
     const rtp = window.stateManager.state.rtpSettings;
 
@@ -458,11 +406,15 @@ function updateAdminDashboard() {
     document.getElementById('slider-plinko-rtp').value = rtp.gameRtps.plinko;
     document.getElementById('val-plinko-rtp').innerText = `${(rtp.gameRtps.plinko * 100).toFixed(0)}%`;
 
-    // Mercado Pago
+    // Mercado Pago: el Access Token nunca se envía de vuelta al navegador por
+    // seguridad. El campo queda vacío; si ya hay uno guardado se indica con un
+    // placeholder, y solo se sobrescribe si el admin escribe uno nuevo.
     const mpConfig = window.stateManager.state.mercadoPagoConfig;
     if (mpConfig) {
         document.getElementById('admin-mp-public-key').value = mpConfig.publicKey || '';
-        document.getElementById('admin-mp-access-token').value = mpConfig.accessToken || '';
+        const tokenInput = document.getElementById('admin-mp-access-token');
+        tokenInput.value = '';
+        tokenInput.placeholder = mpConfig.hasAccessToken ? 'Ya configurado (oculto por seguridad)' : 'TEST-xxxx...';
     }
 
     // Admin Game Visibility
@@ -505,23 +457,27 @@ function updateAdminDashboard() {
     });
 }
 
-function updateRtpDisplay(slider, type) {
+async function updateRtpDisplay(slider, type) {
     const val = parseFloat(slider.value);
     document.getElementById(`val-${type}-rtp`).innerText = `${(val * 100).toFixed(0)}%`;
 
-    // Apply updates directly
-    if (type === 'global') {
-        window.stateManager.setRtpSettings(val);
-    } else {
-        const updates = {};
-        updates[type] = val;
-        window.stateManager.setRtpSettings(window.stateManager.state.rtpSettings.globalRtp, updates);
+    try {
+        // Apply updates directly
+        if (type === 'global') {
+            await window.stateManager.setRtpSettings(val);
+        } else {
+            const updates = {};
+            updates[type] = val;
+            await window.stateManager.setRtpSettings(window.stateManager.state.rtpSettings.globalRtp, updates);
+        }
+    } catch (e) {
+        showToast(e.message, 'danger');
     }
 }
 
-function toggleGameVisibility(gameId, checkbox) {
+async function toggleGameVisibility(gameId, checkbox) {
     try {
-        window.stateManager.setGameVisibility(gameId, checkbox.checked);
+        await window.stateManager.setGameVisibility(gameId, checkbox.checked);
         showToast(`Juego ${checkbox.checked ? 'habilitado' : 'oculto'} correctamente.`, 'success');
         // Do not update the full dashboard because it re-renders checkboxes, losing focus, just refresh games grid in background
         if (document.getElementById('dashboard-view').style.display !== 'none') {
@@ -533,12 +489,12 @@ function toggleGameVisibility(gameId, checkbox) {
     }
 }
 
-function adminAdjustUserBalance() {
+async function adminAdjustUserBalance() {
     const email = document.getElementById('admin-user-email').value;
     const amount = parseFloat(document.getElementById('admin-user-amount').value);
-    
+
     try {
-        window.stateManager.adjustUserBalance(email, amount);
+        await window.stateManager.adjustUserBalance(email, amount);
         showToast(`Saldo de ${email} actualizado a $${amount.toFixed(2)}`, 'success');
         updateAdminDashboard();
         updateUserHud();
@@ -547,12 +503,12 @@ function adminAdjustUserBalance() {
     }
 }
 
-function adminSaveMercadoPagoConfig() {
+async function adminSaveMercadoPagoConfig() {
     const publicKey = document.getElementById('admin-mp-public-key').value;
     const accessToken = document.getElementById('admin-mp-access-token').value;
 
     try {
-        window.stateManager.setMercadoPagoConfig(publicKey, accessToken);
+        await window.stateManager.setMercadoPagoConfig(publicKey, accessToken);
         showToast('Credenciales de Mercado Pago guardadas correctamente.', 'success');
         updateAdminDashboard();
     } catch (e) {
