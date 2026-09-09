@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aetheris Casino & Sportsbook | Premium Online Gaming</title>
-    <meta name="description" content="Aetheris is a next-generation decentralized gaming and sportsbook simulator featuring premium aesthetics, secure balances, and adjustable win distributions.">
+    <title>Coolbet | Premium Online Casino & Sportsbook</title>
+    <meta name="description" content="Coolbet es la plataforma de casino y apuestas deportivas en línea de nueva generación con juegos interactivos y pagos seguros.">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://sdk.mercadopago.com/js/v2"></script>
     <link rel="stylesheet" href="css/styles.css">
@@ -32,7 +32,7 @@
         <header class="glass">
             <div class="logo-container" onclick="window.location.hash = ''">
                 <span class="logo-icon">✨</span>
-                <span class="logo-text text-gradient">AETHERIS</span>
+                <span class="logo-text text-gradient">COOLBET</span>
             </div>
             
             <nav class="header-center">
@@ -53,17 +53,22 @@
                 </div>
 
                 <!-- Logged In HUD -->
-                <div id="logged-in-hud" style="display: none; align-items: center; gap: 16px;">
-                    <button class="btn btn-secondary" onclick="openWalletModal()">
-                        <span>Wallet:</span>
-                        <span class="wallet-balance" id="hud-balance">$0.00</span>
+                <div id="logged-in-hud" style="display: none; align-items: center; gap: 8px;">
+                    <button class="btn btn-secondary btn-sm" onclick="openWalletModal()" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px;">
+                        <span>💰</span>
+                        <span class="wallet-balance" id="hud-balance" style="font-weight: 700; color: #4ade80;">$0.00</span>
                     </button>
-                    <div style="display: flex; flex-direction: column; align-items: flex-end;">
-                        <span id="hud-email" style="font-weight: 600; font-size: 0.85rem; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">user@aetheris.com</span>
-                        <span id="hud-vip" class="user-badge badge-user">VIP Level 1</span>
-                    </div>
-                    <button id="admin-panel-btn" class="btn btn-accent btn-sm" style="display: none;" onclick="window.location.hash = '#admin'">Admin Panel</button>
-                    <button class="btn btn-secondary" style="padding: 8px 12px;" onclick="handleLogout()">Cerrar Sesión</button>
+
+                    <!-- Header Admin Direct Button -->
+                    <button id="admin-panel-btn" class="btn btn-accent btn-sm" style="display: none; padding: 6px 10px; font-size: 0.8rem; border-radius: 8px;" onclick="window.location.hash = '#admin'">
+                        ⚡ Admin
+                    </button>
+
+                    <!-- Circular User Avatar Config Button -->
+                    <button id="user-profile-circle-btn" class="user-avatar-circle-btn" onclick="openUserProfileModal()" title="Configuración de Cuenta">
+                        <span id="hud-avatar-initial">👤</span>
+                        <span class="avatar-status-dot"></span>
+                    </button>
                 </div>
 
                 <!-- Logged Out Buttons -->
@@ -84,11 +89,11 @@
                     <div class="hero-banner glass">
                         <h1 class="text-gradient">El Futuro del Azar, Hoy</h1>
                         <p style="color: var(--text-muted); margin-bottom: 24px; max-width: 600px;">
-                            Explora 20 juegos interactivos con animaciones dinámicas, física integrada y la seguridad criptográfica del ecosistema Aetheris.
+                            Explora 20 juegos interactivos con animaciones dinámicas, física integrada y la seguridad criptográfica del ecosistema Coolbet.
                         </p>
                         <div style="display: flex; gap: 16px;">
                             <button class="btn btn-primary" onclick="scrollToGames()">Jugar Ahora</button>
-                            <button class="btn btn-secondary" onclick="openWalletModal()">Depositar Fondos Simulado</button>
+                            <button class="btn btn-secondary" onclick="openWalletModal()">Recargar Fondos</button>
                         </div>
                     </div>
 
@@ -216,7 +221,7 @@
                             <button class="btn btn-danger" onclick="confirmResetPlatform()">Reiniciar Estadísticas y Saldos</button>
                             <div style="border-top: 1px solid var(--border-color); padding-top: 16px;">
                                 <label class="form-label">Ajustar Saldo de Usuario</label>
-                                <input type="text" id="admin-user-email" class="form-input" placeholder="correo@usuario.com" style="margin-bottom: 8px;">
+                                <input type="text" id="admin-user-email" class="form-input" placeholder="ejemplo@ejemplo.com" style="margin-bottom: 8px;">
                                 <input type="number" id="admin-user-amount" class="form-input" placeholder="Nuevo Saldo ($)" style="margin-bottom: 12px;">
                                 <button class="btn btn-primary" style="width: 100%;" onclick="adminAdjustUserBalance()">Aplicar Saldo</button>
                             </div>
@@ -245,6 +250,145 @@
                                 </div>
                             </div>
                             <button class="btn btn-primary" onclick="adminSaveMercadoPagoConfig()">Guardar Credenciales</button>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Player History Section -->
+                    <h3 style="margin-top: 32px; font-size: 1.4rem;">Historial y Actividad de Jugadores</h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px;">Selecciona un jugador para consultar sus métricas, apuestas, ganancias e historial de transacciones.</p>
+                    
+                    <div class="admin-card glass" style="margin-top: 16px;">
+                        <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 20px;">
+                            <div style="flex: 1;">
+                                <label class="form-label">Seleccionar Jugador</label>
+                                <select id="admin-player-select" class="form-input" onchange="renderSelectedPlayerHistory(this.value)">
+                                    <option value="">-- Seleccionar Usuario --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Stats container for selected player -->
+                        <div id="admin-player-details" style="display: none;">
+                            <div class="profile-stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 20px;">
+                                <div class="stat-item glass">
+                                    <span class="form-label">Saldo Actual</span>
+                                    <div class="stat-val" id="player-stat-balance">$0.00</div>
+                                </div>
+                                <div class="stat-item glass">
+                                    <span class="form-label">Ganancias Totales</span>
+                                    <div class="stat-val" style="color: var(--success);" id="player-stat-winnings">$0.00</div>
+                                </div>
+                                <div class="stat-item glass">
+                                    <span class="form-label">Pérdidas Totales</span>
+                                    <div class="stat-val" style="color: var(--danger);" id="player-stat-losses">$0.00</div>
+                                </div>
+                                <div class="stat-item glass">
+                                    <span class="form-label">Nivel VIP / XP</span>
+                                    <div class="stat-val" id="player-stat-vip">VIP 1</div>
+                                </div>
+                            </div>
+
+                            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-bottom: 20px;">
+                                <h4 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--secondary);">🏦 Datos Bancarios para Consignación de Retiros</h4>
+                                <div id="player-payout-account-display" style="font-size: 0.85rem; color: var(--text-main);">
+                                    Sin datos bancarios registrados aún.
+                                </div>
+                            </div>
+
+                            <h4 style="margin-bottom: 12px; font-size: 1.1rem;">Registro de Apuestas y Jugadas</h4>
+                            <div style="max-height: 300px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px;">
+                                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
+                                    <thead>
+                                        <tr style="background: rgba(255,255,255,0.05); border-bottom: 1px solid var(--border-color);">
+                                            <th style="padding: 10px;">Fecha / Hora</th>
+                                            <th style="padding: 10px;">Juego</th>
+                                            <th style="padding: 10px;">Apuesta</th>
+                                            <th style="padding: 10px;">Ganancia</th>
+                                            <th style="padding: 10px;">Resultado Neto</th>
+                                            <th style="padding: 10px;">IP Origen</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="player-history-tbody">
+                                        <!-- Dynamically filled -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Email Security Alerts Configuration -->
+                    <div class="admin-grid" style="grid-template-columns: 1fr; margin-top: 32px;">
+                        <div class="admin-card glass" style="display: flex; flex-direction: column; gap: 16px;">
+                            <h3 style="font-size: 1.2rem; display: flex; align-items: center; gap: 8px;">
+                                <span>📧</span> Servidor de Correos Notificadores (betc34781@gmail.com)
+                            </h3>
+                            <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5;">
+                                Envía automáticamente desde <strong>betc34781@gmail.com</strong> los códigos de activación de cuenta, recuperación de contraseña, avisos de recepción de recarga y confirmaciones de pago aprobado a los jugadores.
+                            </p>
+
+                            <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); padding: 12px 14px; border-radius: 8px; font-size: 0.8rem; color: #93c5fd; line-height: 1.5;">
+                                🔑 <strong>¿Qué se requiere para activar el envío de correos reales?</strong><br>
+                                Solo necesitas ingresar la <strong>Contraseña de Aplicación de 16 caracteres de Google</strong> generada en la cuenta <u>betc34781@gmail.com</u> (en <em>Google Account ➔ Seguridad ➔ Verificación en 2 pasos ➔ Contraseñas de aplicaciones</em>) y guardar los cambios.
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+                                <div>
+                                    <label class="form-label">Servidor SMTP</label>
+                                    <input type="text" id="admin-smtp-server" class="form-input" value="smtp.gmail.com">
+                                </div>
+                                <div>
+                                    <label class="form-label">Puerto</label>
+                                    <input type="number" id="admin-smtp-port" class="form-input" value="587">
+                                </div>
+                                <div>
+                                    <label class="form-label">Correo Destino Alertas Admin</label>
+                                    <input type="email" id="admin-smtp-alert-email" class="form-input" value="betc34781@gmail.com">
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                <div>
+                                    <label class="form-label">Correo Emisor Oficial</label>
+                                    <input type="email" id="admin-smtp-user" class="form-input" value="betc34781@gmail.com">
+                                </div>
+                                <div>
+                                    <label class="form-label">Contraseña de Aplicación Gmail (16 caracteres)</label>
+                                    <input type="password" id="admin-smtp-password" class="form-input" placeholder="•••• •••• •••• ••••">
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 16px;">
+                                <button class="btn btn-primary" onclick="adminSaveSmtpConfig()">Guardar Credenciales SMTP</button>
+                                <button class="btn btn-secondary" onclick="adminTestSmtpAlert()">Probar Envío de Correo</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PQR Management Section in Admin -->
+                    <h3 style="margin-top: 32px; font-size: 1.4rem;">📩 Gestión de Quejas, Reclamos y PQR de Usuarios</h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px;">Revisa y responde las solicitudes, quejas y reclamos enviados por los jugadores desde la sección inferior del sitio.</p>
+                    
+                    <div class="admin-card glass" style="margin-top: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <span style="font-weight: 700; font-size: 0.95rem;">Bandeja de Entradas PQR</span>
+                            <button class="btn btn-secondary btn-sm" onclick="loadAdminPqrList()">🔄 Actualizar PQR</button>
+                        </div>
+                        <div style="max-height: 350px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px;">
+                            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
+                                <thead>
+                                    <tr style="background: rgba(255,255,255,0.05); border-bottom: 1px solid var(--border-color);">
+                                        <th style="padding: 10px;">ID / Fecha</th>
+                                        <th style="padding: 10px;">Usuario</th>
+                                        <th style="padding: 10px;">Categoría / Asunto</th>
+                                        <th style="padding: 10px;">Mensaje</th>
+                                        <th style="padding: 10px;">Estado</th>
+                                        <th style="padding: 10px;">Acción Admin</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-pqr-tbody">
+                                    <!-- Loaded dynamically -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -292,13 +436,11 @@
                         <a href="#" style="color: var(--text-muted); font-size: 0.8rem; text-decoration: none;" onclick="startForgotPassword()">¿Olvidaste tu contraseña?</a>
                     </div>
                     
-                    <!-- Registration Specific fields -->
-                    <div id="register-only-fields" style="display: none;" class="form-group">
-                        <label class="form-label">Tipo de Cuenta</label>
-                        <select id="auth-role" class="form-input">
-                            <option value="user">Usuario Standard ($5,000 inicial)</option>
-                            <option value="admin">Administrador (Control de Premios)</option>
-                        </select>
+                    <div id="auth-terms-container" style="display: none; margin-top: 12px; font-size: 0.8rem; text-align: left; color: var(--text-muted);">
+                        <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="auth-terms-check" style="margin-top: 2px; cursor: pointer;">
+                            <span>Acepto los <a href="#" style="color: var(--primary-hover); text-decoration: underline;" onclick="openTermsModal(event)">Términos y Condiciones, Políticas de Privacidad y Tratamiento de Datos</a>.</span>
+                        </label>
                     </div>
 
                     <button type="submit" id="auth-submit-btn" class="btn btn-primary" style="width: 100%; margin-top: 12px;">Ingresar</button>
@@ -310,9 +452,10 @@
 
             <!-- Verification Step -->
             <div id="auth-verify-step" style="display: none;">
-                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px; text-align: center;">
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px; text-align: center;">
                     Hemos enviado un código de 4 dígitos a <br><strong id="verify-email-display" style="color: var(--text-main);">tu correo</strong>.
                 </p>
+                <div id="verify-code-hint" style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--success); color: var(--success); padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: bold; text-align: center; margin-bottom: 16px; display: none;"></div>
                 <div class="form-group" style="display: flex; justify-content: center;">
                     <input type="text" id="verify-code-input" class="form-input" style="font-size: 2rem; text-align: center; letter-spacing: 12px; font-weight: bold; padding: 12px 0;" maxlength="4" placeholder="••••">
                 </div>
@@ -328,10 +471,10 @@
 
     <!-- MODAL: Wallet Deposit/Withdrawal -->
     <div class="modal-overlay" id="wallet-modal">
-        <div class="modal-content glass">
+        <div class="modal-content glass" style="max-width: 460px;">
             <button class="modal-close" onclick="closeWalletModal()">✕</button>
-            <h2 style="font-family: var(--font-serif); margin-bottom: 12px;" class="text-gradient">Caja / Wallet</h2>
-            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 24px;">Transacciones simuladas para demostración del sistema.</p>
+            <h2 style="font-family: var(--font-serif); margin-bottom: 8px;" class="text-gradient">Caja / Wallet</h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 18px;">Ingresa el monto a recargar vía Mercado Pago o solicita tu retiro de saldo disponible.</p>
 
             <div class="profile-stats-grid">
                 <div class="stat-item" style="grid-column: span 2;">
@@ -340,18 +483,455 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label class="form-label">Monto de la Transacción ($)</label>
-                <input type="number" id="wallet-amount" class="form-input" min="5" max="10000" value="100">
+            <div class="form-group" style="margin-top: 14px;">
+                <label class="form-label">Monto de la Transacción ($ COP)</label>
+                <input type="number" id="wallet-amount" class="form-input" min="1000" step="1000" value="50000" style="font-size: 1.1rem; font-weight: bold; color: var(--accent);">
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px;">
-                <button class="btn btn-success" onclick="handleWalletTransaction(true)">✓ Depositar Simulado</button>
-                <button class="btn btn-primary" style="background-color: #009ee3; color: white;" onclick="handleMercadoPagoDeposit()">💳 Mercado Pago</button>
-                <button class="btn btn-secondary" onclick="handleWalletTransaction(false)">⤓ Retirar</button>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 18px;">
+                <button class="btn btn-primary" style="width: 100%; padding: 13px; background: linear-gradient(135deg, #009ee3 0%, #0081b8 100%); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-weight: 700; font-size: 0.95rem; border: none; border-radius: 10px; box-shadow: 0 4px 14px rgba(0, 158, 227, 0.4);" onclick="handleMercadoPagoDeposit()">
+                    <span>💳 Recargar con Mercado Pago Colombia</span>
+                    <span style="font-size: 0.72rem; opacity: 0.9; font-weight: normal;">link.mercadopago.com.co/casinobet</span>
+                </button>
+                
+                <button class="btn btn-secondary" style="width: 100%; padding: 11px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600;" onclick="handleWalletTransaction(false)">
+                    ⤓ Solicitar Retiro de Fondos
+                </button>
+            </div>
+
+            <!-- Welcome Bonus Notice -->
+            <div style="background: rgba(245, 158, 11, 0.15); border: 1px solid var(--accent); padding: 10px 14px; border-radius: 8px; font-size: 0.78rem; color: var(--accent); margin-top: 14px; text-align: center; line-height: 1.4;">
+                🎁 <strong>Bono de Bienvenida ($5,000 COP):</strong> Tu saldo incluye un bono inicial de bienvenida. Este saldo es redimible únicamente para apostar en los juegos de la plataforma y <u>no se puede retirar directamente</u>.
+            </div>
+
+            <!-- Payout Bank Account Section -->
+            <div style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+                <h4 style="font-size: 0.9rem; margin-bottom: 6px; color: var(--secondary);">🏦 Datos Bancarios para Recibir Retiros</h4>
+                <p style="font-size: 0.73rem; color: var(--text-muted); margin-bottom: 10px;">Ingresa la cuenta bancaria o billetera (Nequi/Daviplata) donde la empresa te consignará tus retiros aprobados.</p>
+                <div class="responsive-two-col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <div>
+                        <label class="form-label" style="font-size: 0.75rem;">Banco o Entidad</label>
+                        <input type="text" id="payout-bank" class="form-input" placeholder="Ej: Nequi / Bancolombia" style="font-size: 0.85rem; padding: 8px 10px;">
+                    </div>
+                    <div>
+                        <label class="form-label" style="font-size: 0.75rem;">Tipo de Cuenta</label>
+                        <select id="payout-account-type" class="form-input" style="font-size: 0.85rem; padding: 8px 10px;">
+                            <option value="Billetera Digital">Billetera Digital (Nequi / Daviplata)</option>
+                            <option value="Ahorros">Ahorros</option>
+                            <option value="Corriente">Corriente</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label" style="font-size: 0.75rem;">Número de Cuenta / Celular</label>
+                        <input type="text" id="payout-account-number" class="form-input" placeholder="3001234567 / 123456789" style="font-size: 0.85rem; padding: 8px 10px;">
+                    </div>
+                    <div>
+                        <label class="form-label" style="font-size: 0.75rem;">Titular y Cédula</label>
+                        <input type="text" id="payout-holder-info" class="form-input" placeholder="Nombre completo y C.C." style="font-size: 0.85rem; padding: 8px 10px;">
+                    </div>
+                </div>
+                <button class="btn btn-primary" style="width: 100%; font-size: 0.85rem; padding: 9px;" onclick="handleSavePayoutAccount()">Guardar Datos de Retiro</button>
+            </div>
+
+            <!-- Change Password Section -->
+    <!-- MODAL: Pasarela de Pago Oficial Mercado Pago Colombia -->
+    <div class="modal-overlay" id="payment-gateway-modal">
+        <div class="modal-content glass" style="max-width: 480px; padding: 0; overflow: hidden; text-align: left;">
+            
+            <!-- Gateway Header -->
+            <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 16px 18px; border-bottom: 2px solid #009ee3; position: relative;">
+                <button class="modal-close" style="top: 10px; right: 12px;" onclick="cancelPaymentGateway()">✕</button>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; flex-wrap: wrap; gap: 6px;">
+                    <span id="gateway-badge-bank" style="background: rgba(0, 158, 227, 0.2); color: #38bdf8; border: 1px solid #009ee3; font-weight: bold; font-size: 0.72rem; padding: 3px 8px; border-radius: 20px;">
+                        💳 MERCADO PAGO COLOMBIA
+                    </span>
+                    <span style="color: var(--text-muted); font-size: 0.72rem; display: flex; align-items: center; gap: 4px;">
+                        🔒 Encriptación SSL 256-bit
+                    </span>
+                </div>
+                <h3 id="gateway-portal-title" style="margin: 4px 0 0 0; color: white; font-family: var(--font-serif); font-size: 1.1rem;">
+                    Pasarela Oficial Mercado Pago
+                </h3>
+            </div>
+
+            <div style="padding: 16px;">
+                <!-- Summary Card -->
+                <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; margin-bottom: 14px;">
+                    <div class="responsive-two-col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.82rem;">
+                        <div>
+                            <span style="color: var(--text-muted); display: block; font-size: 0.72rem;">Comercio Beneficiario:</span>
+                            <strong style="color: var(--text-main);">Coolbet Casino (casinobet)</strong>
+                        </div>
+                        <div>
+                            <span style="color: var(--text-muted); display: block; font-size: 0.72rem;">Valor Recarga:</span>
+                            <strong id="gateway-amount-display" style="color: #4ade80; font-size: 1rem;">$0 COP</strong>
+                        </div>
+                        <div>
+                            <span style="color: var(--text-muted); display: block; font-size: 0.72rem;">Pasarela / Enlace:</span>
+                            <strong id="gateway-bank-display" style="color: #009ee3; word-break: break-all;">Mercado Pago</strong>
+                        </div>
+                        <div>
+                            <span style="color: var(--text-muted); display: block; font-size: 0.72rem;">Referencia Transacción:</span>
+                            <strong id="gateway-ref-display" style="color: var(--accent); font-family: monospace;">-</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Bank Authentication Box -->
+                <div id="gateway-step-auth" style="display: block;">
+                    <h4 style="margin: 0 0 6px 0; font-size: 0.9rem; color: var(--secondary);">
+                        🔑 Confirmación de Transferencia Mercado Pago
+                    </h4>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.3;">
+                        Ingresa los datos para verificar el comprobante de tu transacción efectuada en <strong>link.mercadopago.com.co/casinobet</strong>.
+                    </p>
+
+                    <form onsubmit="handleConfirmPaymentGatewaySubmit(event)">
+                        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;">
+                            <div>
+                                <label class="form-label" style="font-size: 0.75rem;">Documento de Identidad del Pagador *</label>
+                                <input type="text" id="gateway-input-user" class="form-input" placeholder="Ej: 1020304050" required style="font-size: 0.85rem; padding: 8px 10px;">
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-size: 0.75rem;">Nombre Completo del Titular *</label>
+                                <input type="text" id="gateway-input-pass" class="form-input" placeholder="Nombre titular pagador" required style="font-size: 0.85rem; padding: 8px 10px;">
+                            </div>
+                        </div>
+
+                        <div class="responsive-two-col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <button type="button" class="btn btn-secondary" style="padding: 10px; font-size: 0.85rem;" onclick="cancelPaymentGateway()">❌ Cancelar</button>
+                            <button type="submit" class="btn btn-primary" style="background-color: #009ee3; font-weight: bold; padding: 10px; font-size: 0.85rem;">🔒 Confirmar Pago</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Processing Step -->
+                <div id="gateway-step-processing" style="display: none; text-align: center; padding: 20px 0;">
+                    <div style="width: 44px; height: 44px; border: 4px solid rgba(255,255,255,0.1); border-left-color: #00c853; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 14px auto;"></div>
+                    <h4 style="margin: 0 0 6px 0; color: var(--text-main); font-size: 1.05rem;">Procesando débito con la entidad financiera...</h4>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Por favor no cierres la ventana. Estamos verificando los fondos y autorizando el pago.</p>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- MODAL: Términos y Condiciones -->
+    <div class="modal-overlay" id="terms-modal">
+        <div class="modal-content glass" style="max-width: 650px; max-height: 85vh; overflow-y: auto;">
+            <button class="modal-close" onclick="closeTermsModal()">✕</button>
+            <h2 style="font-family: var(--font-serif); margin-bottom: 16px;" class="text-gradient">Términos, Condiciones y Políticas de Privacidad</h2>
+            
+            <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; text-align: left; display: flex; flex-direction: column; gap: 16px;">
+                <div>
+                    <h4 style="color: var(--text-main); font-size: 1rem; margin-bottom: 4px;">1. Tratamiento de Datos Personales (Habeas Data)</h4>
+                    <p>Al registrarse en Coolbet, el usuario autoriza de manera libre y voluntaria el tratamiento de sus datos personales para la creación de cuenta, validación de transacciones y seguridad de la sesión de juego. Sus datos serán custodiados bajo altos estándares de cifrado.</p>
+                </div>
+
+                <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); padding: 12px; border-radius: 8px;">
+                    <h4 style="color: #f87171; font-size: 1rem; margin-bottom: 4px;">2. ⚠️ EXENCIÓN DE RESPONSABILIDAD SOBRE CONSIGNACIONES A TERCEROS</h4>
+                    <p style="color: #fca5a5;"><strong>IMPORTANTE:</strong> Coolbet NO se hace responsable por consignaciones, transferencias o giros de dinero que el usuario realice a cuentas personales de otros usuarios, terceros, intermediarios o personas ajenas a la plataforma. Todos los depósitos válidos deben realizarse única y exclusivamente mediante las pasarelas oficiales integradas en la plataforma (Mercado Pago o canales de recarga oficiales del sistema).</p>
+                </div>
+
+                <div>
+                    <h4 style="color: var(--text-main); font-size: 1rem; margin-bottom: 4px;">3. Regulaciones de Casas de Apuestas y Bonos</h4>
+                    <p>El uso del servicio está restringido exclusivamente a mayores de 18 años (+18). Los bonos concedidos (incluyendo el Bono de Bienvenida de $5,000 COP) son otorgados con el propósito exclusivo de participar en los juegos de la plataforma y <strong>no se pueden retirar directamente</strong> hacia cuentas bancarias sin haber acumulado las jugadas requeridas.</p>
+                </div>
+
+                <div>
+                    <h4 style="color: var(--text-main); font-size: 1rem; margin-bottom: 4px;">4. Retiros de Fondos</h4>
+                    <p>Los retiros se consignarán exclusivamente a la cuenta bancaria o billetera digital declarada por el usuario en su perfil, cuyo titular coincida con los datos registrados en la cuenta.</p>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="closeTermsModal()">Entendido y Acepto</button>
+        </div>
+    </div>
+
+    <!-- MODAL: Presentar PQR / Quejas y Reclamos -->
+    <div class="modal-overlay" id="pqr-modal">
+        <div class="modal-content glass" style="max-width: 550px;">
+            <button class="modal-close" onclick="closePqrModal()">✕</button>
+            <h2 style="font-family: var(--font-serif); margin-bottom: 8px;" class="text-gradient">Presentar Queja o Reclamo (PQR)</h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Envía tu mensaje directamente al equipo de administración para resolver cualquier duda o inconveniente.</p>
+            
+            <form onsubmit="handlePqrSubmit(event)">
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label class="form-label">Nombre Completo</label>
+                    <input type="text" id="pqr-name" class="form-input" required placeholder="Tu nombre completo">
+                </div>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label class="form-label">Correo de Contacto</label>
+                    <input type="email" id="pqr-email" class="form-input" required placeholder="tuemail@ejemplo.com">
+                </div>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label class="form-label">Tipo de Solicitud</label>
+                    <select id="pqr-category" class="form-input">
+                        <option value="Queja">Queja (Inconformidad con el servicio)</option>
+                        <option value="Reclamo">Reclamo (Problema con saldo o jugada)</option>
+                        <option value="Sugerencia">Sugerencia</option>
+                        <option value="Soporte Técnico">Soporte Técnico</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label class="form-label">Asunto</label>
+                    <input type="text" id="pqr-subject" class="form-input" required placeholder="Resumen del motivo">
+                </div>
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label class="form-label">Mensaje Detallado</label>
+                    <textarea id="pqr-message" class="form-input" rows="4" required placeholder="Escribe aquí los detalles de tu queja o reclamo..." style="font-family: inherit; resize: vertical;"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Enviar Queja / Reclamo</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Configuración y Estado de Cuenta del Usuario -->
+    <div class="modal-overlay" id="user-profile-modal">
+        <div class="modal-content glass" style="max-width: 520px; text-align: left; padding: 0; overflow: hidden; max-height: 90vh; overflow-y: auto;">
+            
+            <!-- Profile Header Card -->
+            <div style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.35) 0%, rgba(59, 130, 246, 0.25) 100%); padding: 18px 20px; border-bottom: 1px solid var(--border-color); position: relative; text-align: center;">
+                <button class="modal-close" style="top: 12px; right: 12px;" onclick="closeUserProfileModal()">✕</button>
+                
+                <div style="width: 64px; height: 64px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); border: 3px solid rgba(255,255,255,0.25); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px auto; font-size: 1.8rem; color: white; font-weight: bold; box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);" id="profile-modal-avatar">
+                    👤
+                </div>
+
+                <h3 id="profile-modal-name" style="margin: 0 0 2px 0; font-family: var(--font-serif); font-size: 1.2rem;" class="text-gradient">
+                    Usuario Coolbet
+                </h3>
+                <p id="profile-modal-email" style="color: var(--text-muted); font-size: 0.8rem; margin: 0 0 8px 0;">
+                    ejemplo@ejemplo.com
+                </p>
+
+                <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
+                    <span id="profile-modal-vip" class="user-badge badge-user">VIP Level 1</span>
+                    <span id="profile-modal-role" class="user-badge" style="background: rgba(0,200,83,0.15); color: #4ade80; border: 1px solid #00c853;">Cuenta Verificada</span>
+                </div>
+            </div>
+
+            <!-- Profile Interactive Tabs Bar -->
+            <div style="display: flex; background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid var(--border-color); overflow-x: auto; padding: 6px 10px; gap: 6px; scrollbar-width: none;">
+                <button id="profile-tab-btn-summary" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 6px 10px; border-radius: 8px; white-space: nowrap;" onclick="switchProfileTab('summary')">📊 Resumen</button>
+                <button id="profile-tab-btn-deposits" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 6px 10px; border-radius: 8px; white-space: nowrap;" onclick="switchProfileTab('deposits')">💳 Recargas</button>
+                <button id="profile-tab-btn-withdrawals" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 6px 10px; border-radius: 8px; white-space: nowrap;" onclick="switchProfileTab('withdrawals')">⤓ Retiros</button>
+                <button id="profile-tab-btn-history" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 6px 10px; border-radius: 8px; white-space: nowrap;" onclick="switchProfileTab('history')">🎰 Ganancias</button>
+                <button id="profile-tab-btn-bank" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 6px 10px; border-radius: 8px; white-space: nowrap;" onclick="switchProfileTab('bank')">🏦 Cuentas</button>
+                <button id="profile-tab-btn-security" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 6px 10px; border-radius: 8px; white-space: nowrap;" onclick="switchProfileTab('security')">🔒 Seguridad</button>
+            </div>
+
+            <!-- Profile Content Body -->
+            <div style="padding: 16px; display: flex; flex-direction: column; gap: 14px;">
+                
+                <!-- TAB 1: SUMMARY -->
+                <div id="profile-tab-content-summary">
+                    <!-- Balance Box -->
+                    <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                            <div>
+                                <span style="color: var(--text-muted); font-size: 0.75rem; display: block;">Saldo Disponible</span>
+                                <strong id="profile-modal-balance" style="color: #4ade80; font-size: 1.3rem;">$0.00 COP</strong>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-primary btn-sm" onclick="closeUserProfileModal(); openWalletModal();">
+                                    💳 Recargar
+                                </button>
+                                <button class="btn btn-secondary btn-sm" onclick="closeUserProfileModal(); openWalletModal();">
+                                    ⤓ Retirar
+                                </button>
+                            </div>
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--accent); background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 6px; padding: 6px 10px; text-align: center;">
+                            🎁 Bono de Bienvenida Activo: <strong id="profile-modal-bonus-val">$5,000.00 COP</strong> (Uso exclusivo en apuestas)
+                        </div>
+                    </div>
+
+                    <!-- Metrics Stats Grid -->
+                    <div class="responsive-two-col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 10px; padding: 10px;">
+                            <span style="font-size: 0.7rem; color: var(--text-muted); display: block;">Total Recargado</span>
+                            <strong id="profile-stat-deposits-total" style="font-size: 1rem; color: #009ee3;">$0.00 COP</strong>
+                        </div>
+                        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 10px; padding: 10px;">
+                            <span style="font-size: 0.7rem; color: var(--text-muted); display: block;">Total Retirado</span>
+                            <strong id="profile-stat-withdrawals-total" style="font-size: 1rem; color: #a78bfa;">$0.00 COP</strong>
+                        </div>
+                        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 10px; padding: 10px;">
+                            <span style="font-size: 0.7rem; color: var(--text-muted); display: block;">Ganancias Acumuladas</span>
+                            <strong id="profile-stat-winnings-total" style="font-size: 1rem; color: #4ade80;">$0.00 COP</strong>
+                        </div>
+                        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 10px; padding: 10px;">
+                            <span style="font-size: 0.7rem; color: var(--text-muted); display: block;">Nivel VIP & XP</span>
+                            <strong id="profile-stat-vip-level" style="font-size: 1rem; color: var(--accent);">VIP 1 (0 XP)</strong>
+                        </div>
+                    </div>
+
+                    <!-- Direct Mercado Pago Button -->
+                    <div style="background: rgba(0, 158, 227, 0.08); border: 1px solid rgba(0, 158, 227, 0.3); border-radius: 12px; padding: 12px; text-align: center;">
+                        <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 6px;">
+                            Pasarela Oficial: <strong style="color:#009ee3;">link.mercadopago.com.co/casinobet</strong>
+                        </span>
+                        <button class="btn btn-primary" style="width: 100%; font-size: 0.85rem; padding: 9px; background-color: #009ee3; color: white;" onclick="closeUserProfileModal(); openWalletModal();">
+                            💳 Ir a Recargar con Mercado Pago
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TAB 2: DEPOSITS -->
+                <div id="profile-tab-content-deposits" style="display: none;">
+                    <h5 style="margin: 0 0 8px 0; font-size: 0.9rem; color: #009ee3;">💳 Registro e Historial de Recargas (Mercado Pago)</h5>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">Detalle de las recargas solicitadas y confirmadas en la plataforma.</p>
+                    <div style="max-height: 240px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.78rem;">
+                            <thead>
+                                <tr style="background: rgba(255,255,255,0.06); color: var(--text-muted);">
+                                    <th style="padding: 8px;">Fecha</th>
+                                    <th style="padding: 8px;">Método / Referencia</th>
+                                    <th style="padding: 8px;">Monto</th>
+                                    <th style="padding: 8px;">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="profile-deposits-tbody">
+                                <tr><td colspan="4" style="padding: 12px; text-align: center; color: var(--text-muted);">Sin recargas registradas aún.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB 3: WITHDRAWALS -->
+                <div id="profile-tab-content-withdrawals" style="display: none;">
+                    <h5 style="margin: 0 0 8px 0; font-size: 0.9rem; color: #a78bfa;">⤓ Registro e Historial de Retiros Solicitados</h5>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">Solicitudes de retiro para consignación a tus cuentas bancarias registradas.</p>
+                    <div style="max-height: 240px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.78rem;">
+                            <thead>
+                                <tr style="background: rgba(255,255,255,0.06); color: var(--text-muted);">
+                                    <th style="padding: 8px;">Fecha</th>
+                                    <th style="padding: 8px;">Cuenta Destino</th>
+                                    <th style="padding: 8px;">Monto</th>
+                                    <th style="padding: 8px;">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="profile-withdrawals-tbody">
+                                <tr><td colspan="4" style="padding: 12px; text-align: center; color: var(--text-muted);">Sin retiros registrados aún.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB 4: BETS & WINNINGS HISTORY -->
+                <div id="profile-tab-content-history" style="display: none;">
+                    <h5 style="margin: 0 0 8px 0; font-size: 0.9rem; color: #4ade80;">🎰 Registro de Ganancias y Apuestas Realizadas</h5>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">Historial de jugadas en slots, juegos crash, ruleta, blackjack y casino.</p>
+                    <div style="max-height: 240px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 8px;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.78rem;">
+                            <thead>
+                                <tr style="background: rgba(255,255,255,0.06); color: var(--text-muted);">
+                                    <th style="padding: 8px;">Fecha</th>
+                                    <th style="padding: 8px;">Juego</th>
+                                    <th style="padding: 8px;">Apuesta</th>
+                                    <th style="padding: 8px;">Premio</th>
+                                    <th style="padding: 8px;">Resultado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="profile-history-tbody">
+                                <tr><td colspan="5" style="padding: 12px; text-align: center; color: var(--text-muted);">Sin apuestas registradas aún.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB 5: BANK ACCOUNT CONFIG -->
+                <div id="profile-tab-content-bank" style="display: none;">
+                    <h5 style="margin: 0 0 8px 0; font-size: 0.9rem; color: #60a5fa;">🏦 Configuración de Cuenta Bancaria (Retiros)</h5>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">Configura tu cuenta (Nequi / Daviplata / Bancolombia) para recibir tus retiros.</p>
+                    
+                    <div class="responsive-two-col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                        <div>
+                            <label class="form-label" style="font-size: 0.75rem;">Banco o Entidad</label>
+                            <input type="text" id="profile-payout-bank" class="form-input" placeholder="Ej: Nequi / Bancolombia" style="padding: 8px 10px; font-size: 0.85rem;">
+                        </div>
+                        <div>
+                            <label class="form-label" style="font-size: 0.75rem;">Tipo de Cuenta</label>
+                            <select id="profile-payout-account-type" class="form-input" style="padding: 8px 10px; font-size: 0.85rem;">
+                                <option value="Billetera Digital">Billetera Digital (Nequi / Daviplata)</option>
+                                <option value="Ahorros">Cuenta de Ahorros</option>
+                                <option value="Corriente">Cuenta Corriente</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label" style="font-size: 0.75rem;">Número de Cuenta / Celular</label>
+                            <input type="text" id="profile-payout-account-number" class="form-input" placeholder="Ej: 3001234567" style="padding: 8px 10px; font-size: 0.85rem;">
+                        </div>
+                        <div>
+                            <label class="form-label" style="font-size: 0.75rem;">Titular y Cédula</label>
+                            <input type="text" id="profile-payout-holder-info" class="form-input" placeholder="Ej: Juan Pérez - C.C. 12345678" style="padding: 8px 10px; font-size: 0.85rem;">
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" style="width: 100%; font-size: 0.85rem; padding: 10px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);" onclick="handleSavePayoutAccount('profile')">
+                        💾 Guardar Configuración Bancaria
+                    </button>
+                </div>
+
+                <!-- TAB 6: SECURITY -->
+                <div id="profile-tab-content-security" style="display: none;">
+                    <h5 style="margin: 0 0 8px 0; font-size: 0.9rem; color: var(--text-main);">🔒 Seguridad y Cambiar Mi Contraseña</h5>
+                    <div class="responsive-two-col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                        <div>
+                            <label class="form-label" style="font-size: 0.75rem;">Contraseña Actual</label>
+                            <input type="password" id="profile-change-old-password" class="form-input" placeholder="••••••••" style="padding: 8px 10px; font-size: 0.85rem;">
+                        </div>
+                        <div>
+                            <label class="form-label" style="font-size: 0.75rem;">Nueva Contraseña</label>
+                            <input type="password" id="profile-change-new-password" class="form-input" placeholder="••••••••" style="padding: 8px 10px; font-size: 0.85rem;">
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" style="width: 100%; font-size: 0.85rem; padding: 9px;" onclick="handleChangePasswordSubmit('profile')">
+                        🔒 Actualizar Contraseña
+                    </button>
+                </div>
+
+                <!-- Navigation Shortcuts & Logout -->
+                <div style="display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--border-color); padding-top: 12px;">
+                    <button id="profile-modal-admin-btn" class="profile-menu-item" style="display: none; background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.4); color: var(--accent); font-weight: bold;" onclick="closeUserProfileModal(); window.location.hash = '#admin';">
+                        <span>⚡ Panel de Administración de Plataforma (#admin)</span>
+                        <span>➔</span>
+                    </button>
+
+                    <button class="profile-menu-item" onclick="closeUserProfileModal(); openPqrModal();">
+                        <span>💬 Quejas y Reclamos (PQR)</span>
+                        <span>➔</span>
+                    </button>
+
+                    <button class="profile-menu-item" onclick="closeUserProfileModal(); openTermsModal();">
+                        <span>📜 Términos, Políticas de Privacidad y +18</span>
+                        <span>➔</span>
+                    </button>
+
+                    <button class="btn btn-danger" style="width: 100%; padding: 11px; font-weight: bold; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); margin-top: 4px;" onclick="closeUserProfileModal(); handleLogout();">
+                        🚪 Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SITE FOOTER -->
+    <footer class="site-footer glass" style="margin-top: 40px; padding: 24px; text-align: center; border-top: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-muted);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; max-width: 1200px; margin: 0 auto;">
+            <div style="text-align: left;">
+                <div style="font-weight: 800; font-size: 1.1rem; color: var(--text-main);" class="text-gradient">COOLBET CASINO & SPORTSBOOK</div>
+                <p style="font-size: 0.75rem; margin-top: 4px;">© 2026 Coolbet. Todos los derechos reservados. Operación responsable de juegos de azar.</p>
+            </div>
+            <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+                <span style="background: rgba(239, 68, 68, 0.2); border: 1px solid var(--danger); color: #f87171; padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 0.75rem;">+18 JUEGO RESPONSABLE</span>
+                <a href="#" style="color: var(--text-main); text-decoration: none;" onclick="openTermsModal(event)">Términos y Políticas</a>
+                <button class="btn btn-primary btn-sm" onclick="openPqrModal()">📩 Quejas y Reclamos (PQR)</button>
+            </div>
+        </div>
+    </footer>
 
     <!-- Load State Script first -->
     <script src="js/state.js"></script>

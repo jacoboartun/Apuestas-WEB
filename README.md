@@ -53,48 +53,34 @@ con conocimientos técnicos podría alterarlo desde la consola. Para una demo
 esto es razonable; si esto fuera a manejar dinero real, ese cálculo debería
 moverse al servidor. Queda documentado en `backend/drive_script.js`.
 
-## Puesta en marcha (gratis)
+## Puesta en marcha en Linux (Servidor y Base de Datos Local)
 
-### 1. Backend (Google Apps Script + Drive)
+Este proyecto incluye un servidor local en Python 3 que sirve el frontend y gestiona la base de datos localmente en Linux.
+
+### Ejecución rápida:
+
+1. Abre la terminal en esta carpeta.
+2. Ejecuta el script de inicio:
+   ```bash
+   ./start_server.sh
+   ```
+   *(O ejecuta directamente: `python3 server.py`)*
+
+3. Abre tu navegador e ingresa a:
+   **http://localhost:8000**
+
+La primera vez que arranca, se crea automáticamente el archivo `aetheris_db.json` en la raíz del proyecto con las cuentas de prueba iniciales. Todos los cambios de saldo, usuarios, apuestas e historial se guardarán localmente en este archivo.
+
+---
+
+## Opción 2: Backend en la Nube (Google Apps Script + Drive)
+
+Si prefieres usar la versión remota en la nube:
 
 1. Andá a https://script.google.com/ → **Nuevo proyecto**.
-2. Borrá el código de ejemplo y pegá **todo** el contenido de
-   `backend/drive_script.js`.
-3. Cambiá la constante `PASSWORD_PEPPER` por una frase secreta propia (no la
-   compartas ni la subas a un repo público).
-4. **Implementar → Nueva implementación** → tipo "Aplicación web" → Ejecutar
-   como "Yo" → Quién tiene acceso "Cualquier persona" → Implementar (acepta los
-   permisos de Drive y Gmail que te pida).
-5. Copiá la URL que te da ("URL de la aplicación web") y pegala en
-   `js/state.js`, en la constante `DRIVE_APP_URL`.
-   - Si ya tenías una URL desplegada y solo actualizaste el código: **Gestionar
-     implementaciones → editar (lápiz) → Versión: Nueva versión → Implementar**,
-     así no cambia la URL y no hace falta tocar `state.js`.
-6. La primera vez que se use, el script crea automáticamente
-   `aetheris_db.json` en tu Google Drive con los usuarios de prueba:
-   - `user@aetheris.com` / `user123`
-   - `admin@aetheris.com` / `admin123`
-   - `jacobocastelblanco@gmail.com` / `admin1234`
+2. Borrá el código de ejemplo y pegá **todo** el contenido de `backend/drive_script.js`.
+3. Configura la implementación como Aplicación web y copia la URL en `js/state.js`.
 
-Esto es gratis: usa tu cuota personal de Drive y de envío de correo de Gmail
-(el límite gratuito de Gmail consumer es ~100 emails/día, de sobra para una demo).
-
-### 2. Frontend (hosting estático gratis)
-
-El frontend es HTML/CSS/JS puro: no necesita build ni Node. Cualquiera de
-estas opciones (gratis) sirve la carpeta `juegos de azar/` tal cual:
-
-- **Netlify** (recomendado, más simple): arrastrá la carpeta `juegos de azar`
-  a https://app.netlify.com/drop, o conectá el repo de GitHub y configurá
-  *Publish directory* = `juegos de azar` (sin build command).
-- **Cloudflare Pages**: igual que Netlify, conectás el repo y configurás el
-  *Build output directory* = `juegos de azar`.
-- **GitHub Pages**: solo publica desde la raíz del repo o desde `/docs`, así
-  que si lo usás vas a necesitar mover el contenido de `juegos de azar/` a la
-  raíz (o a una carpeta `docs/`).
-
-No hace falta backend propio para el frontend: solo son archivos estáticos que
-llaman a tu URL de Apps Script.
 
 ### 3. Mercado Pago (opcional)
 

@@ -278,6 +278,68 @@ header {
     color: white;
     box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
 }
+
+/* Circular Avatar Button in Header */
+.user-avatar-circle-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    color: white;
+    font-weight: 800;
+    font-size: 1.15rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.25s ease;
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.35);
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.user-avatar-circle-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 18px rgba(139, 92, 246, 0.65);
+    border-color: var(--accent);
+}
+
+.avatar-status-dot {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #00c853;
+    border: 2px solid var(--bg-dark);
+}
+
+/* Profile Menu Shortcuts in Modal */
+.profile-menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-main);
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+}
+
+.profile-menu-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary);
+    transform: translateX(4px);
+}
 .badge-user {
     background: var(--primary);
     color: white;
@@ -500,13 +562,17 @@ header {
     bottom: 0;
     background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(8px);
-    z-index: 1000;
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 2000;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 12px;
+    box-sizing: border-box;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
+    overflow-y: auto;
 }
 
 .modal-overlay.active {
@@ -515,12 +581,16 @@ header {
 }
 
 .modal-content {
-    width: 90%;
+    width: 100%;
     max-width: 480px;
-    padding: 32px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 28px 22px;
     position: relative;
-    transform: scale(0.9);
+    transform: scale(0.95);
     transition: transform 0.3s ease;
+    border-radius: 16px;
 }
 
 .modal-overlay.active .modal-content {
@@ -944,9 +1014,231 @@ header {
     font-weight: 700;
 }
 
-/* Responsive adjustments */
-@media(max-width: 1024px) {
+/* Responsive adjustments & Mobile Layout Engine */
+@media (max-width: 1024px) {
     #chat-sidebar {
-        display: none; /* Hide chat sidebar on smaller screens */
+        display: none; /* Ocultar barra de chat en tablets y móviles */
+    }
+    
+    #main-viewport {
+        padding: 20px 12px;
+        height: auto;
+    }
+
+    .hero-banner {
+        padding: 32px 20px;
+    }
+
+    .hero-banner h1 {
+        font-size: 2.2rem;
+    }
+
+    .game-viewport-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .game-bet-panel {
+        order: 2; /* Panel de apuestas abajo en pantallas táctiles */
+        border-right: none;
+        border-top: 2px solid var(--primary);
+        padding: 16px;
+    }
+
+    .game-stage-wrapper {
+        order: 1;
+        min-height: 360px;
+    }
+
+    .profile-stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
     }
 }
+
+@media (max-width: 768px) {
+    header {
+        height: auto;
+        padding: 8px 12px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .logo-container {
+        gap: 8px;
+    }
+
+    .logo-icon {
+        font-size: 1.6rem;
+    }
+
+    .logo-text {
+        font-size: 1.15rem;
+        letter-spacing: 1px;
+    }
+
+    .header-center {
+        order: 3;
+        width: 100%;
+        justify-content: flex-start;
+        gap: 4px;
+        overflow-x: auto;
+        padding: 4px 0;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-link {
+        font-size: 0.8rem;
+        padding: 5px 8px;
+        white-space: nowrap;
+    }
+
+    .header-right {
+        gap: 6px;
+    }
+
+    .user-avatar-circle-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+
+    #theme-select {
+        padding: 4px 6px !important;
+        font-size: 0.75rem !important;
+    }
+
+    .hero-banner {
+        padding: 20px 14px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .hero-banner h1 {
+        font-size: 1.7rem;
+    }
+
+    .hero-banner p {
+        font-size: 0.85rem;
+    }
+
+    .hero-banner div {
+        justify-content: center;
+    }
+
+    .games-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 tarjetas exactas por fila en celulares */
+        gap: 10px;
+    }
+
+    .game-card-img {
+        height: 120px;
+    }
+
+    .game-card-icon {
+        font-size: 2.2rem;
+    }
+
+    .game-card-info {
+        padding: 10px;
+    }
+
+    .game-card-title {
+        font-size: 0.85rem;
+    }
+
+    .game-card-info p {
+        display: none; /* Oculta descripción larga en celulares para tarjetas compactas */
+    }
+
+    .game-card-tag {
+        font-size: 0.7rem;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .game-stage-wrapper {
+        min-height: 300px;
+    }
+
+    .mines-grid {
+        width: 100%;
+        max-width: 300px;
+        height: 300px;
+    }
+
+    .modal-overlay {
+        padding: 10px !important;
+        align-items: flex-start !important;
+        padding-top: 14px !important;
+    }
+
+    .modal-content {
+        width: 100% !important;
+        max-width: 95vw !important;
+        max-height: 86vh !important;
+        overflow-y: auto !important;
+        padding: 18px 14px !important;
+        border-radius: 14px !important;
+        box-sizing: border-box !important;
+        margin: 0 auto !important;
+    }
+
+    .responsive-two-col {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+    }
+
+    .admin-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .profile-stats-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .btn {
+        padding: 8px 12px;
+        font-size: 0.82rem;
+    }
+
+    #hud-balance {
+        font-size: 0.85rem;
+    }
+
+    .modal-content {
+        max-height: 84vh !important;
+        padding: 16px 12px !important;
+    }
+}
+
+/* Animations */
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bg-drift {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 100%; }
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+}
+
+

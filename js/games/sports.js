@@ -39,7 +39,7 @@ window.gamesRegistry['sports'] = {
     renderBoard() {
         this.stage.innerHTML = `
             <div style="display:flex; flex-direction:column; justify-content:space-between; width:100%; height:100%; padding:16px; overflow-y:auto; gap:16px;">
-                <div style="font-family:var(--font-serif); font-size:1.3rem; color:var(--accent); text-align:center;">AETHERIS SPORTSBOOK</div>
+                <div style="font-family:var(--font-serif); font-size:1.3rem; color:var(--accent); text-align:center;">COOLBET SPORTSBOOK</div>
                 
                 <!-- Matches odds list -->
                 <div class="sports-container">

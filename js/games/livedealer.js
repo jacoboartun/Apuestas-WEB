@@ -22,7 +22,7 @@ window.gamesRegistry['livedealer'] = {
                 </select>
             </div>
             <div style="background:rgba(0,0,0,0.2); padding:10px; border-radius:8px; border:1px solid var(--border-color); font-size:0.75rem; color:rgba(255,255,255,0.7); text-align:center;">
-                Estudio en directo Aetheris. Coloca tu apuesta y el crupier virtual repartirá las cartas en vivo.
+                Estudio en directo Coolbet. Coloca tu apuesta y el crupier virtual repartirá las cartas en vivo.
             </div>
         `;
 

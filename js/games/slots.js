@@ -20,7 +20,7 @@ window.gamesRegistry['slots'] = {
         // Render slots HUD
         stage.innerHTML = `
             <div style="display:flex; flex-direction:column; align-items:center; gap:20px; width:100%; height:100%; justify-content:center;">
-                <div style="font-family:var(--font-serif); font-size:1.4rem; color:var(--accent); text-shadow:0 0 10px rgba(245,158,11,0.2);">AETHERIS REELS</div>
+                <div style="font-family:var(--font-serif); font-size:1.4rem; color:var(--accent); text-shadow:0 0 10px rgba(245,158,11,0.2);">COOLBET REELS</div>
                 <div class="slots-container" id="slots-reels-box">
                     <!-- Reels will render here -->
                 </div>

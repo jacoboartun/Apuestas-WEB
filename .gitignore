@@ -1,0 +1,11 @@
+# Logs
+*.log
+
+# Database & Runtime
+aetheris_db.json
+public_url.txt
+__pycache__/
+*.pyc
+
+# Binaries & Tunnels
+cloudflared

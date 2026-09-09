@@ -13,8 +13,11 @@
 
 const SESSION_TOKEN_KEY = 'aetheris_session_token';
 
-// URL de tu aplicación web de Google Apps Script (Sigue las instrucciones en backend/drive_script.js)
-const DRIVE_APP_URL = 'https://script.google.com/macros/s/AKfycbwYOjIEpIczN8SDmHgH9oBlXcEVpzrVfoNaebBOuxSxa43FNPeQMm9yIgQ-V-XldCwm/exec';
+// URL de la API: detecta si corre localmente en un servidor HTTP y usa '/api'
+const API_URL = (window.location.protocol.startsWith('http'))
+    ? `${window.location.origin}/api`
+    : 'https://script.google.com/macros/s/AKfycbwYOjIEpIczN8SDmHgH9oBlXcEVpzrVfoNaebBOuxSxa43FNPeQMm9yIgQ-V-XldCwm/exec';
+const DRIVE_APP_URL = API_URL;
 
 class StateManager {
     constructor() {
@@ -63,6 +66,9 @@ class StateManager {
         }
 
         this.isLoaded = true;
+        if (typeof window.handleRoute === 'function') {
+            window.handleRoute();
+        }
     }
 
     // Llama a una acción del backend. Usa text/plain para que el navegador no
@@ -89,8 +95,8 @@ class StateManager {
 
     // ------------------------- Autenticación -------------------------
 
-    async requestRegistrationCode(email, password, role = 'user') {
-        return this._call('requestCode', { email, password, role, type: 'register' });
+    async requestRegistrationCode(email, password) {
+        return this._call('requestCode', { email, password, role: 'user', type: 'register' });
     }
 
     async completeRegistration(email, code) {
@@ -107,6 +113,10 @@ class StateManager {
         const result = await this._call('completePasswordReset', { email, code, newPassword });
         this._setSession(result.token, result.user);
         return result.user;
+    }
+
+    async changePassword(oldPassword, newPassword) {
+        return this._call('changePassword', { oldPassword, newPassword });
     }
 
     async login(email, password) {
@@ -161,7 +171,30 @@ class StateManager {
 
     async createMercadoPagoPreference(amount) {
         const result = await this._call('createMpPreference', { amount, returnUrl: window.location.href });
-        return result.initPoint;
+        if (result.user) {
+            this.currentUser = result.user;
+        }
+        return result;
+    }
+
+    async processPseDeposit(pseData) {
+        const result = await this._call('processPseDeposit', pseData);
+        if (result.user) {
+            this.currentUser = result.user;
+        }
+        return result;
+    }
+
+    async confirmPaymentGateway(paymentId) {
+        const result = await this._call('confirmPaymentGateway', { paymentId });
+        if (result.user) {
+            this.currentUser = result.user;
+        }
+        return result;
+    }
+
+    async cancelPaymentGateway(paymentId) {
+        return await this._call('cancelPaymentGateway', { paymentId });
     }
 
     // ------------------------- Administración -------------------------
@@ -194,6 +227,32 @@ class StateManager {
 
     async setMercadoPagoConfig(publicKey, accessToken) {
         await this._call('adminSetMpConfig', { publicKey, accessToken });
+    }
+
+    async setSmtpConfig(server, port, username, password, alertEmail) {
+        await this._call('adminSetSmtpConfig', { server, port, username, password, alertEmail });
+    }
+
+    async testSmtpAlert() {
+        await this._call('adminTestSmtp', {});
+    }
+
+    async savePayoutAccount(bankData) {
+        const result = await this._call('savePayoutAccount', bankData);
+        this.currentUser = result.user;
+        return result.user;
+    }
+
+    async submitPqr(pqrData) {
+        return await this._call('submitPqr', pqrData);
+    }
+
+    async adminGetPqrs() {
+        return await this._call('adminGetPqrs', {});
+    }
+
+    async adminResolvePqr(pqrId, status, response) {
+        return await this._call('adminResolvePqr', { pqrId, status, response });
     }
 
     async resetPlatformState() {

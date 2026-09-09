@@ -19,7 +19,7 @@ window.gamesRegistry['coinflip'] = {
                 </select>
             </div>
             <div style="background:rgba(0,0,0,0.2); padding:10px; border-radius:8px; border:1px solid var(--border-color); font-size:0.75rem; color:rgba(255,255,255,0.7); text-align:center;">
-                Elige un lado de la moneda de Aetheris. Adivina el lanzamiento para ganar el doble de tu apuesta.
+                Elige un lado de la moneda de Coolbet. Adivina el lanzamiento para ganar el doble de tu apuesta.
             </div>
         `;
 
@@ -38,7 +38,7 @@ window.gamesRegistry['coinflip'] = {
                 
                 <!-- 3D Coin element -->
                 <div style="perspective:400px;">
-                    <div id="cf-coin-element" class="coin-3d">AETHERIS</div>
+                    <div id="cf-coin-element" class="coin-3d">COOLBET</div>
                 </div>
 
                 <div id="cf-status-hud" style="text-align:center; font-family:var(--font-serif); font-size:1.4rem; font-weight:700; color:var(--accent); min-height:40px;">
